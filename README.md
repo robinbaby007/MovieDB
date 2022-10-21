@@ -1,6 +1,6 @@
 # MovieDB
 Movie database using,
-# jetpack compose
+# Jetpack compose
 # Clean Architecture
 # Hilt
 # MVVM
