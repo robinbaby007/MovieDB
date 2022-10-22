@@ -11,23 +11,31 @@ import kotlinx.coroutines.launch
 import retrofit2.Response
 import javax.inject.Inject
 import androidx.compose.runtime.State
+import androidx.compose.ui.unit.Constraints
+import com.example.moviedb.domain.use_cases.ListNowPlayingMovies
+import com.example.moviedb.utils.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(useCases: UseCases) : ViewModel() {
 
-    private val _nowPlayingList = mutableStateOf(NowPlayingMovieResponse())
-    val nowPlayingList : State<NowPlayingMovieResponse> =_nowPlayingList
-
+    private val _nowPlayingFullData = mutableStateOf(NowPlayingMovieResponse())
+    private val nowPlayingFullData: State<NowPlayingMovieResponse> = _nowPlayingFullData
+    private var _nowPlayingMovieList = mutableStateListOf<NowPlayingMovieResponse.Result>()
+    val nowPlayingMovieList :List<NowPlayingMovieResponse.Result> = _nowPlayingMovieList
 
 
     init {
 
         viewModelScope.launch {
-            useCases.listNowPlayingMovies.invoke("", 1).collect() {
+            useCases.listNowPlayingMovies.invoke(Constants.LANG, "1").collect {
 
-                it.body()?.let {response->
-                    _nowPlayingList.value = response
+                it.body()?.let { response ->
+                    _nowPlayingFullData.value = response
+                    _nowPlayingMovieList.clear()
+                    response.results?.forEach { result ->
+                        _nowPlayingMovieList.add(result!!)
+                    }
                 }
 
             }

@@ -17,10 +17,10 @@ class MovieDBRepositoryImpl @Inject constructor(private val movieDBInterface: Mo
 
     override suspend fun specificMovieList(
         lang: String,
-        page: Int
+        page: String
     ): Flow<Response<NowPlayingMovieResponse>> {
         return flow {
-            emit(movieDBInterface.nowPlaying())
+            emit(movieDBInterface.nowPlaying(language = lang, page = page))
         }.flowOn(Dispatchers.IO)
 
     }

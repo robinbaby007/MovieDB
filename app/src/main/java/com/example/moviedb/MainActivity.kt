@@ -9,6 +9,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,8 +22,11 @@ import androidx.navigation.navArgument
 import com.example.moviedb.data.retrofit.MovieDBInterface
 import com.example.moviedb.presentation.home.Home
 import com.example.moviedb.presentation.movie_details.MovieDetails
+import com.example.moviedb.ui.theme.LightWhite
 import com.example.moviedb.ui.theme.MovieDBTheme
+import com.example.moviedb.ui.theme.Purple200
 import com.example.moviedb.utils.Screens
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.GlobalScope
@@ -41,6 +45,14 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
+                    val systemUiController = rememberSystemUiController()
+                    DisposableEffect(systemUiController, true) {
+                        systemUiController.setSystemBarsColor(
+                            color = LightWhite,
+                            darkIcons = true
+                        )
+                        onDispose {}
+                    }
                     MovieDB()
                 }
             }

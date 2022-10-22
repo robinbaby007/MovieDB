@@ -7,12 +7,12 @@ plugins {
 
 android {
     namespace 'com.example.moviedb'
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.example.moviedb"
         minSdk 31
-        targetSdk 32
+        targetSdk 33
         versionCode 1
         versionName "1.0"
 
@@ -63,6 +63,8 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_ui_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_ui_version"
 
+    // System Ui
+    implementation "com.google.accompanist:accompanist-systemuicontroller:0.17.0"
 
     // Retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.6.0'
@@ -70,8 +72,9 @@ dependencies {
     implementation "com.squareup.okhttp3:logging-interceptor:4.5.0"
 
     //Glide
-    implementation 'com.github.bumptech.glide:glide:4.14.2'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.14.2'
+    implementation "com.github.skydoves:landscapist-glide:2.0.2"
+    /* implementation 'com.github.bumptech.glide:glide:4.14.2'
+     annotationProcessor 'com.github.bumptech.glide:compiler:4.14.2'*/
 
     //Compose Navigation
     def nav_version = "2.5.2"
