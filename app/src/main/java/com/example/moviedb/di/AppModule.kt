@@ -2,9 +2,7 @@ package com.example.moviedb.di
 
 import com.example.moviedb.data.retrofit.MovieDBInterface
 import com.example.moviedb.domain.MovieDBRepository
-import com.example.moviedb.domain.use_cases.ListNowPlayingMovies
-import com.example.moviedb.domain.use_cases.ListTopRatedMovies
-import com.example.moviedb.domain.use_cases.UseCases
+import com.example.moviedb.domain.use_cases.*
 import com.example.moviedb.utils.Constants.Companion.BASE_URL
 import dagger.Module
 import dagger.Provides
@@ -47,7 +45,9 @@ object AppModule {
     @Singleton
     fun useCases(movieDBRepository: MovieDBRepository): UseCases = UseCases(
         ListNowPlayingMovies(movieDBRepository),
-        ListTopRatedMovies(movieDBRepository)
+        ListTopRatedMovies(movieDBRepository),
+        MovieDetails(movieDBRepository),
+        CastList(movieDBRepository)
     )
 
 }

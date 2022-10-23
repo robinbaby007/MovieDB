@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
@@ -23,39 +21,34 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.bumptech.glide.Glide
-import com.example.moviedb.ui.theme.LightWhite
-import com.example.moviedb.ui.theme.Purple200
-import com.example.moviedb.ui.theme.ThinGrey
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+ import com.example.moviedb.ui.theme.LightWhite
 import com.example.moviedb.ui.theme.WhiteTransparent
 import com.example.moviedb.utils.Constants
 import com.example.moviedb.utils.HomeBottomNavigation
-import com.google.gson.Gson
-import com.skydoves.landscapist.ImageOptions
-import com.skydoves.landscapist.glide.GlideImage
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.seconds
+
 
 
 @Composable
 fun Home(navController: NavController, viewModel: HomeViewModel = hiltViewModel()) {
 
-    val configuration = LocalConfiguration.current
+    /*val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
-    val scrollState = rememberScrollState()
+    val scrollState = rememberScrollState()*/
 
 
     val backgroundImageName = remember {
-        mutableStateOf(Constants.IMAGE_BASE_URL + viewModel.nowPlayingMovieList.getOrNull(0)?.posterPath)
+        mutableStateOf("")
     }
 
     Scaffold(bottomBar = { BottomNavigation(navController) }) {
@@ -65,29 +58,39 @@ fun Home(navController: NavController, viewModel: HomeViewModel = hiltViewModel(
                 .fillMaxSize()
                 .background(LightWhite)
         ) {
-
-            GlideImage(
-                imageModel = { Constants.IMAGE_BASE_URL + backgroundImageName.value },
-                Modifier
-                    .blur(radius = 10.dp)
-                    .fillMaxWidth()
-                    .height(screenHeight / 1.5f)
+            
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(Constants.IMAGE_BASE_URL + backgroundImageName.value)
+                    .crossfade(true)
+                    .build(),
+                placeholder = painterResource(com.example.moviedb.R.drawable.place_holder),
+                contentDescription = stringResource(R.string.copy),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .blur(30.dp)
+                    .fillMaxSize()
             )
 
             LazyColumn(Modifier.padding(10.dp)) {
 
                 item {
-                    SearchBar(screenHeight)
+                    SearchBar()
                     Text(
                         text = "Now Playing",
-                        modifier = Modifier.padding(24.dp),
+                        modifier = Modifier.padding(start = 24.dp),
                         color = Color.White,
                         fontSize = 24.sp
                     )
                     NowPlayingList(viewModel) {
                         backgroundImageName.value = it
                     }
-                    Text(text = "Top Rated", color = Color.Black, modifier = Modifier.padding(bottom = 10.dp, start = 24.dp),fontSize = 24.sp)
+                    Text(
+                        text = "Top Rated",
+                        color = Color.White,
+                        modifier = Modifier.padding(top = 10.dp, bottom = 20.dp, start = 24.dp),
+                        fontSize = 24.sp
+                    )
                     TopRated(viewModel)
 
                 }
@@ -98,11 +101,10 @@ fun Home(navController: NavController, viewModel: HomeViewModel = hiltViewModel(
     }
 
 
-
 }
 
 @Composable
-fun SearchBar(screenHeight: Dp) {
+fun SearchBar() {
 
     val search = remember { mutableStateOf("") }
 
@@ -110,7 +112,7 @@ fun SearchBar(screenHeight: Dp) {
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.Transparent)
-            .padding(bottom = screenHeight / 32, top = 30.dp), verticalArrangement = Arrangement.Top
+            .padding(bottom = 10.dp, top = 20.dp), verticalArrangement = Arrangement.Top
     ) {
 
         Card(
@@ -164,7 +166,7 @@ fun SearchBar(screenHeight: Dp) {
 fun NowPlayingList(viewModel: HomeViewModel, imageUrl: (String) -> Unit) {
 
 
-    LazyRow {
+    LazyRow(Modifier.padding(top = 10.dp)) {
 
         items(
             items = viewModel.nowPlayingMovieList,
@@ -179,17 +181,14 @@ fun NowPlayingList(viewModel: HomeViewModel, imageUrl: (String) -> Unit) {
                     .height(400.dp), shape = RoundedCornerShape(10.dp)
             ) {
 
-                GlideImage(
-                    Constants.IMAGE_BASE_URL.let {
-                        { it + message.posterPath }
-                    },
-                    modifier = Modifier.fillMaxSize(),
-                    imageOptions = ImageOptions(
-                        contentScale = ContentScale.Inside,
-                        alignment = Alignment.Center
-                    )
-
-                )
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(Constants.IMAGE_BASE_URL +message.posterPath)
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = stringResource(R.string.copy),
+                    contentScale = ContentScale.Fit,
+                 )
 
             }
             message.posterPath?.let { imageUrl(it) }
@@ -209,8 +208,8 @@ fun BottomNavigation(navController: NavController) {
     )
 
     BottomNavigation(
-        backgroundColor = LightWhite,
-        contentColor = Color.Black
+        backgroundColor = Color.Black,
+        contentColor = Color.White
     ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
@@ -245,20 +244,18 @@ fun TopRated(viewModel: HomeViewModel) {
         ) { message ->
             Card(
                 Modifier
-                    .padding(end = 10.dp, bottom = 70.dp)
+                    .padding(end = 10.dp, bottom = 60.dp)
                     .height(100.dp), shape = RoundedCornerShape(10.dp)
             ) {
 
-                GlideImage(
-                    Constants.IMAGE_BASE_URL.let {
-                        { it + message.posterPath }
-                    },
-                    modifier = Modifier.fillMaxSize(),
-                    imageOptions = ImageOptions(
-                        contentScale = ContentScale.Inside,
-                        alignment = Alignment.Center
-                    )
-
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(Constants.IMAGE_BASE_URL +message.posterPath)
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = stringResource(R.string.copy),
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier.fillMaxSize()
                 )
 
             }

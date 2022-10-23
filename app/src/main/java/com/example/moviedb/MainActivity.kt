@@ -48,8 +48,8 @@ class MainActivity : ComponentActivity() {
                     val systemUiController = rememberSystemUiController()
                     DisposableEffect(systemUiController, true) {
                         systemUiController.setSystemBarsColor(
-                            color = LightWhite,
-                            darkIcons = true
+                            color = Color.Black,
+                            darkIcons = false
                         )
                         onDispose {}
                     }
