@@ -5,12 +5,16 @@ import android.content.res.Configuration
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,12 +29,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.bumptech.glide.Glide
 import com.example.moviedb.ui.theme.LightWhite
 import com.example.moviedb.ui.theme.Purple200
 import com.example.moviedb.ui.theme.ThinGrey
 import com.example.moviedb.ui.theme.WhiteTransparent
 import com.example.moviedb.utils.Constants
+import com.example.moviedb.utils.HomeBottomNavigation
 import com.google.gson.Gson
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
@@ -45,45 +51,54 @@ fun Home(navController: NavController, viewModel: HomeViewModel = hiltViewModel(
 
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
+    val scrollState = rememberScrollState()
+
 
     val backgroundImageName = remember {
         mutableStateOf(Constants.IMAGE_BASE_URL + viewModel.nowPlayingMovieList.getOrNull(0)?.posterPath)
     }
 
+    Scaffold(bottomBar = { BottomNavigation(navController) }) {
 
-
-    Box(
-        Modifier
-            .fillMaxSize()
-            .background(LightWhite)) {
-
-        GlideImage(
-            imageModel = { Constants.IMAGE_BASE_URL + backgroundImageName.value },
+        Box(
             Modifier
-                .blur(radius = 10.dp)
-                .fillMaxWidth()
-                .height(screenHeight / 2)
-        )
+                .fillMaxSize()
+                .background(LightWhite)
+        ) {
 
-
-        Column {
-
-            SearchBar(screenHeight)
-            Text(
-                text = "Now Playing",
-                modifier = Modifier.padding(24.dp),
-                color = Color.White,
-                fontSize = 24.sp
+            GlideImage(
+                imageModel = { Constants.IMAGE_BASE_URL + backgroundImageName.value },
+                Modifier
+                    .blur(radius = 10.dp)
+                    .fillMaxWidth()
+                    .height(screenHeight / 1.5f)
             )
-            NowPlayingList(viewModel) {
-                backgroundImageName.value = it
+
+            LazyColumn(Modifier.padding(10.dp)) {
+
+                item {
+                    SearchBar(screenHeight)
+                    Text(
+                        text = "Now Playing",
+                        modifier = Modifier.padding(24.dp),
+                        color = Color.White,
+                        fontSize = 24.sp
+                    )
+                    NowPlayingList(viewModel) {
+                        backgroundImageName.value = it
+                    }
+                    Text(text = "Top Rated", color = Color.Black, modifier = Modifier.padding(bottom = 10.dp, start = 24.dp),fontSize = 24.sp)
+                    TopRated(viewModel)
+
+                }
+
             }
-
-
         }
 
-
     }
+
+
+
 }
 
 @Composable
@@ -181,5 +196,74 @@ fun NowPlayingList(viewModel: HomeViewModel, imageUrl: (String) -> Unit) {
 
         }
     }
+
+}
+
+@Composable
+fun BottomNavigation(navController: NavController) {
+
+    val navigationItems = listOf(
+        HomeBottomNavigation.Home,
+        HomeBottomNavigation.Film,
+        HomeBottomNavigation.TV
+    )
+
+    BottomNavigation(
+        backgroundColor = LightWhite,
+        contentColor = Color.Black
+    ) {
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentRoute = navBackStackEntry?.destination?.route
+        navigationItems.forEach {
+            BottomNavigationItem(
+                selected = it.route == currentRoute,
+                onClick = {},
+                icon = {
+                    Icon(
+                        painter = painterResource(id = it.icon),
+                        contentDescription = it.title
+                    )
+                })
+
+        }
+
+    }
+
+}
+
+@Composable
+fun TopRated(viewModel: HomeViewModel) {
+
+
+    LazyRow {
+
+        items(
+            items = viewModel.topRatedMovieList,
+            key = { message ->
+                message.id.toString()
+            }
+        ) { message ->
+            Card(
+                Modifier
+                    .padding(end = 10.dp, bottom = 70.dp)
+                    .height(100.dp), shape = RoundedCornerShape(10.dp)
+            ) {
+
+                GlideImage(
+                    Constants.IMAGE_BASE_URL.let {
+                        { it + message.posterPath }
+                    },
+                    modifier = Modifier.fillMaxSize(),
+                    imageOptions = ImageOptions(
+                        contentScale = ContentScale.Inside,
+                        alignment = Alignment.Center
+                    )
+
+                )
+
+            }
+        }
+    }
+
 
 }

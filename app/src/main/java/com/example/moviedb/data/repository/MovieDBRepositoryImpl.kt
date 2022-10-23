@@ -15,7 +15,7 @@ class MovieDBRepositoryImpl @Inject constructor(private val movieDBInterface: Mo
 
     /*@Inject private lateinit var movieDBInterface: MovieDBInterface*/
 
-    override suspend fun specificMovieList(
+    override suspend fun nowPlayingList(
         lang: String,
         page: String
     ): Flow<Response<NowPlayingMovieResponse>> {
@@ -23,6 +23,15 @@ class MovieDBRepositoryImpl @Inject constructor(private val movieDBInterface: Mo
             emit(movieDBInterface.nowPlaying(language = lang, page = page))
         }.flowOn(Dispatchers.IO)
 
+    }
+
+    override suspend fun topRatedList(
+        lang: String,
+        page: String
+    ): Flow<Response<NowPlayingMovieResponse>> {
+        return flow {
+            emit(movieDBInterface.topRated(language = lang, page = page))
+        }.flowOn(Dispatchers.IO)
     }
 
 }

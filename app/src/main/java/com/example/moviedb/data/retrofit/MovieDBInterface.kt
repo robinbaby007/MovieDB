@@ -16,6 +16,16 @@ interface MovieDBInterface {
         @Query("page")
         page: String = "1",
     ):Response<NowPlayingMovieResponse>
-// https://api.themoviedb.org/3/movie/now_playing?api_key=b11da8d22d4a162a55fe5e732a251133&language=en-US&page=1
+
+    @GET("movie/top_rated")
+    suspend fun topRated(
+        @Query("api_key")
+        apiKey: String = Constants.API_KEY,
+        @Query("language")
+        language: String = Constants.LANG,
+        @Query("page")
+        page: String = "1",
+    ):Response<NowPlayingMovieResponse>
+
 
 }

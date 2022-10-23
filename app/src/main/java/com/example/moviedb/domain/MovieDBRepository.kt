@@ -5,6 +5,7 @@ import retrofit2.Response
 
 interface MovieDBRepository {
 
-    suspend fun specificMovieList(lang:String,page:String):Flow<Response<NowPlayingMovieResponse>>
+    suspend fun nowPlayingList(lang:String,page:String):Flow<Response<NowPlayingMovieResponse>>
+    suspend fun topRatedList(lang:String,page:String):Flow<Response<NowPlayingMovieResponse>>
 
 }

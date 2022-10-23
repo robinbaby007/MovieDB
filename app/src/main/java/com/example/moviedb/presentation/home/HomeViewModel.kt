@@ -22,7 +22,9 @@ class HomeViewModel @Inject constructor(useCases: UseCases) : ViewModel() {
     private val _nowPlayingFullData = mutableStateOf(NowPlayingMovieResponse())
     private val nowPlayingFullData: State<NowPlayingMovieResponse> = _nowPlayingFullData
     private var _nowPlayingMovieList = mutableStateListOf<NowPlayingMovieResponse.Result>()
-    val nowPlayingMovieList :List<NowPlayingMovieResponse.Result> = _nowPlayingMovieList
+    val nowPlayingMovieList: List<NowPlayingMovieResponse.Result> = _nowPlayingMovieList
+    private var _topRatedMovieList = mutableStateListOf<NowPlayingMovieResponse.Result>()
+     var topRatedMovieList: List<NowPlayingMovieResponse.Result> = _topRatedMovieList
 
 
     init {
@@ -35,6 +37,16 @@ class HomeViewModel @Inject constructor(useCases: UseCases) : ViewModel() {
                     _nowPlayingMovieList.clear()
                     response.results?.forEach { result ->
                         _nowPlayingMovieList.add(result!!)
+                    }
+                }
+
+            }
+
+            useCases.listTopRatedMovies.invoke(Constants.LANG, "1").collect {
+                it.body()?.let { response ->
+                    _topRatedMovieList.clear()
+                    response.results?.forEach { result ->
+                        _topRatedMovieList.add(result!!)
                     }
                 }
 
