@@ -32,11 +32,11 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
- import com.example.moviedb.ui.theme.LightWhite
+import com.airbnb.lottie.compose.*
+import com.example.moviedb.ui.theme.LightWhite
 import com.example.moviedb.ui.theme.WhiteTransparent
 import com.example.moviedb.utils.Constants
 import com.example.moviedb.utils.HomeBottomNavigation
-
 
 
 @Composable
@@ -58,7 +58,7 @@ fun Home(navController: NavController, viewModel: HomeViewModel = hiltViewModel(
                 .fillMaxSize()
                 .background(LightWhite)
         ) {
-            
+
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(Constants.IMAGE_BASE_URL + backgroundImageName.value)
@@ -71,6 +71,7 @@ fun Home(navController: NavController, viewModel: HomeViewModel = hiltViewModel(
                     .blur(30.dp)
                     .fillMaxSize()
             )
+
 
             LazyColumn(Modifier.padding(10.dp)) {
 
@@ -96,6 +97,7 @@ fun Home(navController: NavController, viewModel: HomeViewModel = hiltViewModel(
                 }
 
             }
+            Loading(viewModel.apiCompleteMap)
         }
 
     }
@@ -183,12 +185,12 @@ fun NowPlayingList(viewModel: HomeViewModel, imageUrl: (String) -> Unit) {
 
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data(Constants.IMAGE_BASE_URL +message.posterPath)
+                        .data(Constants.IMAGE_BASE_URL + message.posterPath)
                         .crossfade(true)
                         .build(),
                     contentDescription = stringResource(R.string.copy),
                     contentScale = ContentScale.Fit,
-                 )
+                )
 
             }
             message.posterPath?.let { imageUrl(it) }
@@ -250,7 +252,7 @@ fun TopRated(viewModel: HomeViewModel) {
 
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data(Constants.IMAGE_BASE_URL +message.posterPath)
+                        .data(Constants.IMAGE_BASE_URL + message.posterPath)
                         .crossfade(true)
                         .build(),
                     contentDescription = stringResource(R.string.copy),
@@ -262,5 +264,21 @@ fun TopRated(viewModel: HomeViewModel) {
         }
     }
 
+
+}
+
+
+@Composable
+fun Loading(isLoading: Map<Int,Boolean>) {
+     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(com.example.moviedb.R.raw.loading_anim))
+    if (isLoading[0] == false && isLoading[1] == false) {
+        LottieAnimation(
+            composition = composition,
+            iterations = LottieConstants.IterateForever,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(50.dp)
+        )
+    }
 
 }
