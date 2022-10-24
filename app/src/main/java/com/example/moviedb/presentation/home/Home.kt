@@ -271,7 +271,7 @@ fun TopRated(viewModel: HomeViewModel) {
 @Composable
 fun Loading(isLoading: Map<Int,Boolean>) {
      val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(com.example.moviedb.R.raw.loading_anim))
-    if (isLoading[0] == false && isLoading[1] == false) {
+    if (isLoading[0] == false || isLoading[1] == false) {
         LottieAnimation(
             composition = composition,
             iterations = LottieConstants.IterateForever,
