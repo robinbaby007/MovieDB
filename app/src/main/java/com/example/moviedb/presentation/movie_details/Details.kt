@@ -4,13 +4,20 @@ import android.R
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
@@ -26,6 +33,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.example.moviedb.presentation.home.Loading
 import com.example.moviedb.utils.Constants
 import com.google.gson.Gson
 import org.w3c.dom.Text
@@ -34,13 +42,8 @@ import org.w3c.dom.Text
 @Composable
 fun MovieDetails(navController: NavController, viewModel: DetailsViewModel = hiltViewModel()) {
 
-    Log.e("apiCheck1", Gson().toJson(viewModel.movieDetails))
-    Log.e("apiCheck2", Gson().toJson(viewModel.castList))
-
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
-
-
 
     Box(Modifier.fillMaxSize()) {
         AsyncImage(
@@ -53,6 +56,7 @@ fun MovieDetails(navController: NavController, viewModel: DetailsViewModel = hil
             modifier = Modifier
                 .fillMaxWidth()
                 .size(screenHeight / 2.3f)
+
         )
 
         Card(
@@ -62,14 +66,80 @@ fun MovieDetails(navController: NavController, viewModel: DetailsViewModel = hil
                 .padding(top = screenHeight / 2.4f),
             shape = RoundedCornerShape(18.dp)
         ) {
+            LazyColumn {
+                item {
 
-            Column(Modifier.background(Color.Transparent)) {
-                Text(text = "Overview", color = Color.Black, fontSize = 24.sp, modifier = Modifier.padding(top=150.dp, start = 20.dp, end = 20.dp))
-                Text(text = viewModel.movieDetails.value.overview?:"", color = Color.Gray, fontSize = 16.sp, modifier = Modifier.padding(top=10.dp, start = 20.dp))
+                    Text(
+                        text = "Overview",
+                        color = Color.Black,
+                        fontSize = 24.sp,
+                        modifier = Modifier.padding(top = 150.dp, start = 20.dp, end = 20.dp)
+                    )
+                    Text(
+                        text = viewModel.movieDetails.value.overview ?: "",
+                        color = Color.Gray,
+                        fontSize = 16.sp,
+                        modifier = Modifier.padding(top = 10.dp, start = 20.dp)
+                    )
+
+                    Text(
+                        text = "Top Bill Cast",
+                        color = Color.Black,
+                        fontSize = 24.sp,
+                        modifier = Modifier.padding(top = 10.dp, start = 20.dp, end = 20.dp)
+                    )
+
+                    LazyRow(Modifier.padding(top = 10.dp)) {
+
+                        items(
+                            items = viewModel.castList,
+                            key = { message ->
+                                message.toString()
+                            }
+                        ) { item ->
+
+                            Column {
+
+                                AsyncImage(
+                                    model = ImageRequest.Builder(LocalContext.current)
+                                        .data(Constants.IMAGE_BASE_URL + item.profilePath)
+                                        .crossfade(true)
+                                        .placeholder(com.example.moviedb.R.drawable.avatar)
+                                        .error(com.example.moviedb.R.drawable.avatar)
+                                        .build(),
+                                    contentDescription = stringResource(R.string.copy),
+                                    contentScale = ContentScale.FillWidth,
+                                    modifier = Modifier
+                                        .size(100.dp)
+                                        .padding(10.dp)
+                                        .clip(RoundedCornerShape(150.dp)),
+                                )
+
+                                Text(
+                                    text = item.name ?: "",
+                                    color = Color.Black,
+                                    fontSize = 14.sp,
+                                    modifier = Modifier.padding(horizontal = 10.dp)
+                                )
+
+                            }
+
+
+                        }
+
+                    }
+
+                }
+
+
             }
         }
 
-        Row(Modifier.padding(top = screenHeight / 3.2f).background(Color.Transparent)) {
+        Row(
+            Modifier
+                .padding(top = screenHeight / 3.2f)
+                .background(Color.Transparent)
+        ) {
 
             Card(
                 shape = RoundedCornerShape(10.dp), modifier = Modifier
@@ -84,17 +154,32 @@ fun MovieDetails(navController: NavController, viewModel: DetailsViewModel = hil
                         .crossfade(true)
                         .build(),
                     contentDescription = stringResource(R.string.copy),
-                    contentScale = ContentScale.FillWidth)
+                    contentScale = ContentScale.FillWidth
+                )
 
             }
 
-            Column(Modifier.padding(top = 90.dp)) {
+            Column(Modifier.padding(top = 90.dp).background(Color.White).fillMaxWidth().height(110.dp)) {
 
-                Text(text = viewModel.movieDetails.value.originalTitle?:"", color = Color.Black, fontSize = 24.sp, modifier = Modifier.padding(start = 20.dp, bottom = 8.dp))
-
+                Text(
+                    text = viewModel.movieDetails.value.originalTitle ?: "",
+                    color = Color.Black,
+                    fontSize = 24.sp,
+                    modifier = Modifier.padding(start = 20.dp, bottom = 8.dp)
+                )
                 Row() {
-                    Icon(painter = painterResource(id = com.example.moviedb.R.drawable.ic_calendar), contentDescription ="calendar", modifier = Modifier.padding(start = 20.dp), tint = Color.Gray )
-                    Text(text = viewModel.movieDetails.value.releaseDate?:"", color = Color.Gray, fontSize = 15.sp, modifier = Modifier.padding(start = 8.dp, top = 2.dp))
+                    Icon(
+                        painter = painterResource(id = com.example.moviedb.R.drawable.ic_calendar),
+                        contentDescription = "calendar",
+                        modifier = Modifier.padding(start = 20.dp),
+                        tint = Color.Gray
+                    )
+                    Text(
+                        text = viewModel.movieDetails.value.releaseDate ?: "",
+                        color = Color.DarkGray,
+                        fontSize = 15.sp,
+                        modifier = Modifier.padding(start = 8.dp, top = 2.dp)
+                    )
 
                 }
 
@@ -102,6 +187,7 @@ fun MovieDetails(navController: NavController, viewModel: DetailsViewModel = hil
 
 
         }
+        Loading(viewModel.apiCompleteMap)
     }
 
 
