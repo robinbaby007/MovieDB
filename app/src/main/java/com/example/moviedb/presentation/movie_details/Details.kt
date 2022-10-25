@@ -67,7 +67,6 @@ fun MovieDetails(navController: NavController, viewModel: DetailsViewModel = hil
                 Text(text = "Overview", color = Color.Black, fontSize = 24.sp, modifier = Modifier.padding(top=150.dp, start = 20.dp, end = 20.dp))
                 Text(text = viewModel.movieDetails.value.overview?:"", color = Color.Gray, fontSize = 16.sp, modifier = Modifier.padding(top=10.dp, start = 20.dp))
             }
-
         }
 
         Row(Modifier.padding(top = screenHeight / 3.2f).background(Color.Transparent)) {
