@@ -10,7 +10,7 @@ interface MovieDBRepository {
 
     suspend fun nowPlayingList(lang:String,page:String):Flow<NetworkResult<Response<NowPlayingMovieResponse>>>
     suspend fun topRatedList(lang:String,page:String): Flow<NetworkResult<Response<NowPlayingMovieResponse>>>
-    suspend fun movieDetails(movieId:String):Flow<Response<MovieDetailsResponse>>
-    suspend fun castList(movieId:String):Flow<Response<CastList>>
+    suspend fun movieDetails(movieId:String):Flow<NetworkResult<Response<MovieDetailsResponse>>>
+    suspend fun castList(movieId:String):Flow<NetworkResult<Response<CastList>>>
 
 }

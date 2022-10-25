@@ -5,6 +5,7 @@ import android.content.res.Configuration
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
@@ -37,6 +38,7 @@ import com.example.moviedb.ui.theme.LightWhite
 import com.example.moviedb.ui.theme.WhiteTransparent
 import com.example.moviedb.utils.Constants
 import com.example.moviedb.utils.HomeBottomNavigation
+import com.example.moviedb.utils.Screens
 
 
 @Composable
@@ -83,7 +85,7 @@ fun Home(navController: NavController, viewModel: HomeViewModel = hiltViewModel(
                         color = Color.White,
                         fontSize = 24.sp
                     )
-                    NowPlayingList(viewModel) {
+                    NowPlayingList(viewModel,navController) {
                         backgroundImageName.value = it
                     }
                     Text(
@@ -92,7 +94,7 @@ fun Home(navController: NavController, viewModel: HomeViewModel = hiltViewModel(
                         modifier = Modifier.padding(top = 10.dp, bottom = 20.dp, start = 24.dp),
                         fontSize = 24.sp
                     )
-                    TopRated(viewModel)
+                    TopRated(viewModel,navController)
 
                 }
 
@@ -165,7 +167,7 @@ fun SearchBar() {
 
 
 @Composable
-fun NowPlayingList(viewModel: HomeViewModel, imageUrl: (String) -> Unit) {
+fun NowPlayingList(viewModel: HomeViewModel,navController: NavController, imageUrl: (String) -> Unit) {
 
 
     LazyRow(Modifier.padding(top = 10.dp)) {
@@ -180,7 +182,11 @@ fun NowPlayingList(viewModel: HomeViewModel, imageUrl: (String) -> Unit) {
                 Modifier
                     .fillMaxWidth()
                     .padding(10.dp)
-                    .height(400.dp), shape = RoundedCornerShape(10.dp)
+                    .height(400.dp)
+                    .clickable {
+                        navigateToDetails(navController,message.id.toString())
+                    }
+                , shape = RoundedCornerShape(10.dp)
             ) {
 
                 AsyncImage(
@@ -233,7 +239,7 @@ fun BottomNavigation(navController: NavController) {
 }
 
 @Composable
-fun TopRated(viewModel: HomeViewModel) {
+fun TopRated(viewModel: HomeViewModel,navController: NavController) {
 
 
     LazyRow {
@@ -247,7 +253,11 @@ fun TopRated(viewModel: HomeViewModel) {
             Card(
                 Modifier
                     .padding(end = 10.dp, bottom = 60.dp)
-                    .height(100.dp), shape = RoundedCornerShape(10.dp)
+                    .height(100.dp)
+                    .clickable {
+                        navigateToDetails(navController,message.id.toString())
+                    }
+                    ,shape = RoundedCornerShape(10.dp)
             ) {
 
                 AsyncImage(
@@ -277,8 +287,13 @@ fun Loading(isLoading: Map<Int,Boolean>) {
             iterations = LottieConstants.IterateForever,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(50.dp)
+                .padding(100.dp)
         )
     }
 
+}
+
+
+fun navigateToDetails(navController: NavController,movieId:String){
+    navController.navigate(Screens.MovieDetailsScreen.route + "?movieId=$movieId")
 }
