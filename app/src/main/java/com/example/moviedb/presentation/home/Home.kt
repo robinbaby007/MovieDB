@@ -184,7 +184,7 @@ fun NowPlayingList(viewModel: HomeViewModel,navController: NavController, imageU
                 Modifier
                     .fillMaxWidth()
                     .padding(10.dp)
-                    .height(400.dp)
+                    .height(370.dp)
                     .clickable {
                         navigateToDetails(navController, message.id.toString())
                     }
@@ -197,7 +197,7 @@ fun NowPlayingList(viewModel: HomeViewModel,navController: NavController, imageU
                         .crossfade(true)
                         .build(),
                     contentDescription = stringResource(R.string.copy),
-                    contentScale = ContentScale.Fit,
+                    contentScale = ContentScale.FillHeight,
                 )
 
             }
