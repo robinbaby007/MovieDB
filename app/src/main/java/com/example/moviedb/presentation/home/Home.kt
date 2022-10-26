@@ -83,7 +83,8 @@ fun Home(navController: NavController, viewModel: HomeViewModel = hiltViewModel(
                         text = "Now Playing",
                         modifier = Modifier.padding(start = 24.dp),
                         color = Color.White,
-                        fontSize = 24.sp
+                        fontSize = 22.sp,
+                        style =  MaterialTheme.typography.h1
                     )
                     NowPlayingList(viewModel,navController) {
                         backgroundImageName.value = it
@@ -92,7 +93,8 @@ fun Home(navController: NavController, viewModel: HomeViewModel = hiltViewModel(
                         text = "Top Rated",
                         color = Color.White,
                         modifier = Modifier.padding(top = 10.dp, bottom = 20.dp, start = 24.dp),
-                        fontSize = 24.sp
+                        fontSize = 22.sp,
+                        style =  MaterialTheme.typography.h1
                     )
                     TopRated(viewModel,navController)
 
@@ -103,7 +105,7 @@ fun Home(navController: NavController, viewModel: HomeViewModel = hiltViewModel(
         }
 
     }
-
+    NoInternet(viewModel.apiError.value)
 
 }
 
@@ -154,7 +156,7 @@ fun SearchBar() {
                         unfocusedIndicatorColor = Color.Transparent,
                         disabledIndicatorColor = Color.Transparent
                     ),
-                    placeholder = { Text(text = "Search Movies", color = Color.White) },
+                    placeholder = { Text(text = "Search Movies", color = Color.White, fontSize = 12.sp) },
                     singleLine = true
                 )
             }
@@ -184,7 +186,7 @@ fun NowPlayingList(viewModel: HomeViewModel,navController: NavController, imageU
                     .padding(10.dp)
                     .height(400.dp)
                     .clickable {
-                        navigateToDetails(navController,message.id.toString())
+                        navigateToDetails(navController, message.id.toString())
                     }
                 , shape = RoundedCornerShape(10.dp)
             ) {
@@ -255,7 +257,7 @@ fun TopRated(viewModel: HomeViewModel,navController: NavController) {
                     .padding(end = 10.dp, bottom = 60.dp)
                     .height(100.dp)
                     .clickable {
-                        navigateToDetails(navController,message.id.toString())
+                        navigateToDetails(navController, message.id.toString())
                     }
                     ,shape = RoundedCornerShape(10.dp)
             ) {
@@ -289,6 +291,25 @@ fun Loading(isLoading: Map<Int,Boolean>) {
                 .fillMaxSize()
                 .padding(100.dp)
         )
+    }
+
+}
+
+@Composable
+fun NoInternet(show:Boolean){
+
+    if (show){
+        Surface(Modifier.fillMaxSize().background(Color.White)) {
+            val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(com.example.moviedb.R.raw.no_internet_connection))
+            LottieAnimation(
+                composition = composition,
+                iterations = LottieConstants.IterateForever,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(100.dp)
+            )
+        }
+
     }
 
 }

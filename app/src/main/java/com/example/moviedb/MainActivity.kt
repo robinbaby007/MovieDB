@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -14,6 +15,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -21,7 +25,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.moviedb.data.retrofit.MovieDBInterface
 import com.example.moviedb.presentation.home.Home
+import com.example.moviedb.presentation.home.HomeViewModel
 import com.example.moviedb.presentation.movie_details.MovieDetails
+import com.example.moviedb.presentation.splash.SplashScreenViewModel
 import com.example.moviedb.ui.theme.LightWhite
 import com.example.moviedb.ui.theme.MovieDBTheme
 import com.example.moviedb.ui.theme.Purple200
@@ -30,15 +36,29 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Scope
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity: ComponentActivity() {
+
+    private val splashScreenViewModel: SplashScreenViewModel by viewModels()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
+
+        installSplashScreen().apply {
+            setKeepOnScreenCondition {
+                splashScreenViewModel.sync.value
+            }
+        }
+
+
         setContent {
             MovieDBTheme {
                 Surface(
@@ -76,7 +96,7 @@ fun MovieDB() {
                 defaultValue = ""
             }
         )) {
-            MovieDetails(navController)
+            MovieDetails()
         }
 
     }

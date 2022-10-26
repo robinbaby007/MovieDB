@@ -12,9 +12,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
@@ -24,6 +26,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -36,11 +39,14 @@ import coil.request.ImageRequest
 import com.example.moviedb.presentation.home.Loading
 import com.example.moviedb.utils.Constants
 import com.google.gson.Gson
+import dagger.hilt.android.internal.Contexts
 import org.w3c.dom.Text
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 @Composable
-fun MovieDetails(navController: NavController, viewModel: DetailsViewModel = hiltViewModel()) {
+fun MovieDetails(viewModel: DetailsViewModel = hiltViewModel()) {
 
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
@@ -72,21 +78,26 @@ fun MovieDetails(navController: NavController, viewModel: DetailsViewModel = hil
                     Text(
                         text = "Overview",
                         color = Color.Black,
-                        fontSize = 24.sp,
-                        modifier = Modifier.padding(top = 150.dp, start = 20.dp, end = 20.dp)
+                        fontSize = 22.sp,
+                        modifier = Modifier.padding(top = 150.dp, start = 20.dp, end = 20.dp),
+                        style = MaterialTheme.typography.h1
                     )
                     Text(
                         text = viewModel.movieDetails.value.overview ?: "",
                         color = Color.Gray,
-                        fontSize = 16.sp,
-                        modifier = Modifier.padding(top = 10.dp, start = 20.dp)
+                        fontSize = 15.sp,
+                        modifier = Modifier.padding(top = 10.dp, start = 20.dp, end = 10.dp),
+                        style = MaterialTheme.typography.subtitle1,
+                        lineHeight = 20.sp
                     )
 
                     Text(
                         text = "Top Bill Cast",
                         color = Color.Black,
-                        fontSize = 24.sp,
-                        modifier = Modifier.padding(top = 10.dp, start = 20.dp, end = 20.dp)
+                        fontSize = 22.sp,
+                        modifier = Modifier.padding(top = 10.dp, start = 20.dp, end = 20.dp),
+                        style = MaterialTheme.typography.h1
+
                     )
 
                     LazyRow(Modifier.padding(top = 10.dp)) {
@@ -119,7 +130,12 @@ fun MovieDetails(navController: NavController, viewModel: DetailsViewModel = hil
                                     text = item.name ?: "",
                                     color = Color.Black,
                                     fontSize = 14.sp,
-                                    modifier = Modifier.padding(horizontal = 10.dp)
+                                    modifier = Modifier
+                                        .padding(horizontal = 10.dp)
+                                        .width(100.dp),
+                                    style = MaterialTheme.typography.subtitle1,
+                                    textAlign = TextAlign.Center
+
                                 )
 
                             }
@@ -159,13 +175,20 @@ fun MovieDetails(navController: NavController, viewModel: DetailsViewModel = hil
 
             }
 
-            Column(Modifier.padding(top = 90.dp).background(Color.White).fillMaxWidth().height(110.dp)) {
+            Column(
+                Modifier
+                    .padding(top = 90.dp)
+                    .background(Color.White)
+                    .fillMaxWidth()
+                    .height(110.dp)
+            ) {
 
                 Text(
                     text = viewModel.movieDetails.value.originalTitle ?: "",
                     color = Color.Black,
-                    fontSize = 24.sp,
-                    modifier = Modifier.padding(start = 20.dp, bottom = 8.dp)
+                    fontSize = 22.sp,
+                    modifier = Modifier.padding(start = 20.dp, bottom = 8.dp),
+                    style = MaterialTheme.typography.h1
                 )
                 Row() {
                     Icon(
@@ -175,10 +198,12 @@ fun MovieDetails(navController: NavController, viewModel: DetailsViewModel = hil
                         tint = Color.Gray
                     )
                     Text(
-                        text = viewModel.movieDetails.value.releaseDate ?: "",
+                        text = dateFormatter(viewModel.movieDetails.value.releaseDate),
                         color = Color.DarkGray,
                         fontSize = 15.sp,
-                        modifier = Modifier.padding(start = 8.dp, top = 2.dp)
+                        modifier = Modifier.padding(start = 8.dp, top = 2.dp),
+                        style = MaterialTheme.typography.h1
+
                     )
 
                 }
@@ -190,5 +215,19 @@ fun MovieDetails(navController: NavController, viewModel: DetailsViewModel = hil
         Loading(viewModel.apiCompleteMap)
     }
 
+
+}
+
+fun dateFormatter(date: String?): String {
+
+    return try {
+
+        val parser = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+        val formatter = SimpleDateFormat("dd MMMM yyyy", Locale.US)
+        return date?.let { parser.parse(it)?.let { formatter.format(it) } } ?: "Not Available"
+
+    } catch (e: Exception) {
+        "Not Available"
+    }
 
 }

@@ -29,6 +29,8 @@ class HomeViewModel @Inject constructor(useCases: UseCases) : ViewModel() {
     var topRatedMovieList: List<NowPlayingMovieResponse.Result> = _topRatedMovieList
     private var _apiCompleteMap = mutableStateMapOf<Int, Boolean>()
     val apiCompleteMap: Map<Int, Boolean> = _apiCompleteMap
+    private val _apiError = mutableStateOf(false)
+    val apiError: State<Boolean> = _apiError
 
     init {
         initMapValues()
@@ -48,7 +50,7 @@ class HomeViewModel @Inject constructor(useCases: UseCases) : ViewModel() {
                         _apiCompleteMap[0] = true
                     }
                     is NetworkResult.Failure -> {
-
+                        _apiError.value=true
                     }
 
                    /* is NetworkResult.Loading -> {
@@ -73,6 +75,7 @@ class HomeViewModel @Inject constructor(useCases: UseCases) : ViewModel() {
                     }
 
                     is NetworkResult.Failure -> {
+                        _apiError.value=true
                     }
 
                     /*is NetworkResult.Loading -> {

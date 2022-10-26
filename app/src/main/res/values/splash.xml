@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="MyCustomTheme" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/black</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/netflix_logo</item>
+        <item name="postSplashScreenTheme">@style/Theme.MovieDB</item>
+        <item name="android:windowSplashScreenAnimationDuration">3000</item>
+    </style>
+</resources>
